@@ -1,0 +1,77 @@
+// Basic configuration type
+TYPE "Config_001"
+STRUCT
+    ENABLED : BOOL;
+    TIMEOUT : TIME;
+    RETRIES : INT;
+END_STRUCT
+END_TYPE
+
+// Status information type
+TYPE "Status_001"
+STRUCT
+    CODE : INT;
+    MESSAGE : STRING;
+    TIMESTAMP : TIME;
+END_STRUCT
+END_TYPE
+
+// Process data type
+TYPE "ProcessData_001"
+STRUCT
+    TEMPERATURE : REAL;
+    PRESSURE : REAL;
+    FLOW_RATE : REAL;
+    VALID : BOOL;
+END_STRUCT
+END_TYPE
+
+// Matrix type for 2D and 3D arrays
+TYPE "Matrix_001"
+STRUCT
+    // 2D Arrays (like a grid or matrix)
+    GRID_INT : ARRAY[1..5, 1..5] OF INT;     // 5x5 matrix
+    GRID_REAL : ARRAY[0..3, 0..3] OF REAL;   // 4x4 matrix
+    GRID_BOOL : ARRAY[1..4, 1..6] OF BOOL;   // 4x6 matrix
+    
+    // 3D Arrays (like a cube)
+    CUBE_INT : ARRAY[1..3, 1..3, 1..3] OF INT;     // 3x3x3 cube
+    CUBE_REAL : ARRAY[0..2, 0..2, 0..2] OF REAL;   // 3x3x3 cube
+    CUBE_BOOL : ARRAY[1..2, 1..2, 1..2] OF BOOL;   // 2x2x2 cube
+END_STRUCT
+END_TYPE
+
+// Main test type with nested structures
+TYPE "TestAllTypes_001"
+STRUCT
+    // Basic types
+    INT_VAL : INT;
+    REAL_VAL : REAL;
+    BOOL_VAL : BOOL;
+    STRING_VAL : STRING;
+    DWORD_VAL : DWORD;
+    TIME_VAL : TIME;
+    DINT_VAL : DINT;
+    
+    // 1D Array types
+    INT_ARRAY : ARRAY[0..10] OF INT;
+    REAL_ARRAY : ARRAY[1..5] OF REAL;
+    BOOL_ARRAY : ARRAY[0..3] OF BOOL;
+    
+    // Multi-dimensional arrays
+    MATRIX : "Matrix_001";
+    GRID_DATA : ARRAY[1..4, 1..4] OF "ProcessData_001";  // 4x4 grid of process data
+    
+    // Enum values
+    STATE : INT;
+    STATE_IDLE : INT := 0;
+    STATE_RUN : INT := 1;
+    STATE_ERR : INT := 2;
+    STATE_DONE : INT := 3;
+
+    // Nested structures
+    CONFIG : "Config_001";
+    STATUS : "Status_001";
+    PROCESS_DATA : ARRAY[1..3] OF "ProcessData_001";
+END_STRUCT
+END_TYPE 
