@@ -1,12 +1,14 @@
 {
   "name": "ts2scl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert TypeScript to Siemens SCL code",
   "main": "dist/index.js",
   "type": "module",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*",
+    "!dist/**/*.test.*",
+    "!dist/**/__tests__/**",
     "README.md",
     "LICENSE"
   ],
@@ -51,7 +53,6 @@
   },
   "dependencies": {
     "@types/reflect-metadata": "^0.0.5",
-    "iec-61131-3": "^1.1.0",
     "reflect-metadata": "^0.1.14"
   }
 }
