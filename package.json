@@ -10,18 +10,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:samples": "tsc -p src/sample/tsconfig.json",
-    "start": "ts-node --esm --project tsconfig.node.json src/index.ts",
-    "cli": "ts-node --esm --project tsconfig.node.json src/cli.ts",
-    "compile": "ts-node --esm --project tsconfig.node.json src/cli.ts compile",
-    "convert": "ts-node --esm --project tsconfig.node.json src/cli.ts convert",
-    "test": "jest",
-    "lint": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
-    "lint:fix": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\" --fix",
-    "format": "prettier --write \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
-    "format:check": "prettier --check \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
-    "prepublishOnly": "npm run build"
+    "test": "jest"
   },
   "bin": {
     "ts2scl": "./dist/cli.js"
@@ -59,6 +48,7 @@
   },
   "dependencies": {
     "@types/reflect-metadata": "^0.0.5",
+    "commander": "^13.1.0",
     "reflect-metadata": "^0.1.14"
   }
 }

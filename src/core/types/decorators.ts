@@ -2,7 +2,8 @@ import 'reflect-metadata';
 import { ArrayDimension, SCLBlockOptions, SCLPropertyOptions, SCLInstanceType, SCLCategory, SCLVarType } from './types.js';
 import { METADATA_KEYS, MetadataKey } from './metadata-types.js';
 import { setPropertyMetadata } from '../../utils/metadata-utils.js';
-sconst getMetadata = <T>(key: MetadataKey, target: any): T => Reflect.getMetadata(key, target) as T;
+import { type } from 'os';
+const getMetadata = <T>(key: MetadataKey, target: any): T => Reflect.getMetadata(key, target) as T;
 
 const setMetadata = (key: MetadataKey, value: any, target: any, propertyKey?: string): void => {
 

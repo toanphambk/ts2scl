@@ -50,7 +50,7 @@ npm install
 
 You can use the npm scripts to run the TS2SCL compiler or converter:
 
-```bash
+````bash
 # Compile a TypeScript file to SCL
 npm run compile -- path/to/your/file.ts --output output/directory
 
@@ -59,7 +59,7 @@ npm run compile -- path/to/your/directory --output output/directory
 
 # Convert a specific TypeScript type to SCL
 npm run convert -- path/to/your/file.ts --output output/file.scl
-```
+
 
 ### Basic Usage
 
@@ -69,7 +69,7 @@ npm run build
 
 # Run tests
 npm test
-```
+````
 
 ### API Usage
 
