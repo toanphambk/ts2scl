@@ -9,6 +9,7 @@
     "dist/core/**/*",
     "dist/utils/**/*",
     "dist/index.*",
+    "dist/cli.js",
     "README.md",
     "LICENSE"
   ],
@@ -16,6 +17,7 @@
     "build": "tsc",
     "build:samples": "tsc -p src/sample/tsconfig.json",
     "start": "ts-node --esm src/index.ts",
+    "cli": "ts-node --esm src/cli.ts",
     "sample": "ts-node --esm src/sample/index.ts",
     "test": "jest",
     "lint": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
