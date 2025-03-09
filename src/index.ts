@@ -5,12 +5,12 @@
  */
 
 import { resolve, relative, dirname } from 'path';
-import { TypeCompiler } from './compilers/type-compiler.js';
-import { DataBlockCompiler } from './compilers/db-compiler.js';
-import { FunctionCompiler } from './compilers/fc-compiler.js';
-import { FunctionBlockCompiler } from './compilers/fb-compiler.js';
-import { BaseCompiler } from './base/base-compiler.js';
-import { LogLevel } from '../utils/logger.js';
+import { TypeCompiler } from './core/compilers/type-compiler.js';
+import { DataBlockCompiler } from './core/compilers/db-compiler.js';
+import { FunctionCompiler } from './core/compilers/fc-compiler.js';
+import { FunctionBlockCompiler } from './core/compilers/fb-compiler.js';
+import { BaseCompiler } from './core/base/base-compiler.js';
+import { LogLevel } from './utils/logger.js';
 import { mkdirSync } from 'fs';
 
 export class MainCompiler extends BaseCompiler {

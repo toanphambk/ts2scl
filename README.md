@@ -48,28 +48,13 @@ npm install
 
 ### Using the CLI
 
-You can use the npm scripts to run the TS2SCL compiler or converter:
-
-````bash
-# Compile a TypeScript file to SCL
-npm run compile -- path/to/your/file.ts --output output/directory
-
-# Compile a directory of TypeScript files to SCL (recursive)
-npm run compile -- path/to/your/directory --output output/directory
-
-# Convert a specific TypeScript type to SCL
-npm run convert -- path/to/your/file.ts --output output/file.scl
-
-
-### Basic Usage
-
 ```bash
 # Build the project
 npm run build
 
 # Run tests
 npm test
-````
+```
 
 ### API Usage
 
@@ -168,12 +153,6 @@ npm run test:watch
 
 # Build project
 npm run build
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
 ```
 
 ## Contributing

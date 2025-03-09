@@ -15,6 +15,6 @@
     "declaration": true,
     "sourceMap": true
   },
-  "include": ["src/core/**/*", "src/utils/**/*", "src/index.ts"],
+  "include": ["src/core/**/*", "src/utils/**/*", "src/core/index.ts"],
   "exclude": ["node_modules", "**/*.test.ts", "src/__tests__/**/*", "src/sample/**/*"]
 }

@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-import { MainCompiler } from '../core';
+import { MainCompiler } from '../index';
 
 type BlockContent = {
     [key: string]: string[];

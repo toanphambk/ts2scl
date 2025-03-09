@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-import { MainCompiler } from '../core';
+import { MainCompiler } from '../index';
 
 describe('Function Compiler Tests', () => {
     const compiler = new MainCompiler();
