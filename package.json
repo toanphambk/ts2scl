@@ -6,19 +6,14 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/core/**/*",
-    "dist/utils/**/*",
-    "dist/index.*",
-    "dist/cli.js",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
     "build:samples": "tsc -p src/sample/tsconfig.json",
-    "start": "ts-node --esm --project tsconfig.node.json src/index.ts",
-    "cli": "ts-node --esm --project tsconfig.node.json src/cli.ts",
-    "sample": "ts-node --esm --project tsconfig.node.json src/sample/index.ts",
+    "compile": "ts-node --esm --project tsconfig.node.json src/cli.ts compile",
+    "convert": "ts-node --esm --project tsconfig.node.json src/cli.ts convert",
     "test": "jest",
     "lint": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
     "lint:fix": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\" --fix",

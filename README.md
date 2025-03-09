@@ -39,12 +39,27 @@ ts2scl/
 npm install ts2scl
 
 # Or clone and install dependencies
-git clone https://github.com/yourusername/ts2scl.git
+git clone https://github.com/toanphambk/ts2scl.git
 cd ts2scl
 npm install
 ```
 
 ## Usage
+
+### Using the CLI
+
+You can use the npm scripts to run the TS2SCL compiler or converter:
+
+```bash
+# Compile a TypeScript file to SCL
+npm run compile -- path/to/your/file.ts --output output/directory
+
+# Compile a directory of TypeScript files to SCL (recursive)
+npm run compile -- path/to/your/directory --output output/directory
+
+# Convert a specific TypeScript type to SCL
+npm run convert -- path/to/your/file.ts --output output/file.scl
+```
 
 ### Basic Usage
 
