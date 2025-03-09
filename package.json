@@ -14,12 +14,18 @@
   ],
   "scripts": {
     "build": "tsc",
+    "build:samples": "tsc -p src/sample/tsconfig.json",
+    "start": "ts-node --esm src/index.ts",
+    "sample": "ts-node --esm src/sample/index.ts",
     "test": "jest",
     "lint": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
     "lint:fix": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\" --fix",
     "format": "prettier --write \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
     "format:check": "prettier --check \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
     "prepublishOnly": "npm run build"
+  },
+  "bin": {
+    "ts2scl": "./dist/cli.js"
   },
   "repository": {
     "type": "git",
@@ -49,6 +55,7 @@
     "jest": "^29.5.0",
     "prettier": "^3.4.2",
     "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.0.3"
   },
   "dependencies": {
