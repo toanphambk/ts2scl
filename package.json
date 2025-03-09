@@ -4,13 +4,28 @@
   "description": "Convert TypeScript to Siemens SCL code",
   "main": "dist/index.js",
   "type": "module",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toanphambk/ts2scl.git"
+  },
+  "homepage": "https://github.com/toanphambk/ts2scl#readme",
+  "bugs": {
+    "url": "https://github.com/toanphambk/ts2scl/issues"
   },
   "keywords": [
     "typescript",
