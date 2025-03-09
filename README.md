@@ -25,10 +25,9 @@ ts2scl/
 │   │   ├── base/       # Base classes and interfaces
 │   │   ├── compilers/  # Type compilers
 │   │   ├── generators/ # SCL code generators
-│   │   └── types/      # Type definitions
-│   ├── utils/          # Utility functions
-│   ├── sample/         # Sample code and examples
-│   └── __tests__/      # Test files
+│   │   ├── types/      # Type definitions and decorators
+│   │   └── index.ts    # Main compiler entry point
+│   └── utils/          # Utility functions
 ├── dist/               # Compiled JavaScript output
 └── ...
 ```
@@ -72,6 +71,61 @@ interface Motor {
 // Convert to SCL
 const sclCode = convertTypeToSCL<Motor>('Motor');
 console.log(sclCode);
+```
+
+### Using Decorators
+
+```typescript
+import { SCLType, SCLArray, BOOL, INT, REAL, dim } from 'ts2scl';
+
+@SCLType()
+export class MotorConfig {
+  SPEED_SETPOINT: REAL;
+  IS_RUNNING: BOOL;
+
+  @SCLArray([dim(0, 9)])
+  SPEED_HISTORY: INT[];
+}
+```
+
+### Creating Data Blocks
+
+```typescript
+import { SCLDb, Retain, BOOL, INT, TIME } from 'ts2scl';
+import { MotorConfig } from './types';
+
+@SCLDb({
+  version: '1.0',
+  optimizedAccess: true,
+  dbAccessibleFromOPCUA: true,
+})
+export class MotorDB {
+  @Retain()
+  public CONFIG: MotorConfig;
+
+  @Retain()
+  public CYCLE_COUNT: INT;
+
+  public LAST_CYCLE_TIME: TIME;
+}
+```
+
+### Creating Function Blocks
+
+```typescript
+import { SCLFB, Static, Input, Output, Retain, BOOL, INT } from 'ts2scl';
+import { MotorInput, MotorOutput } from './types';
+
+@SCLFB()
+export class MotorController {
+  @Static()
+  @Retain()
+  public lastSpeed: INT;
+
+  public exec(@Input({}) input: MotorInput, @Output({}) output: MotorOutput): void {
+    // Function block implementation
+  }
+}
 ```
 
 ## Type Mappings

@@ -6,19 +6,19 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*",
-    "!dist/**/*.test.*",
-    "!dist/**/__tests__/**",
+    "dist/core/**/*",
+    "dist/utils/**/*",
+    "dist/index.*",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "lint": "eslint \"src/**/*.ts\"",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
+    "lint": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
+    "lint:fix": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\" --fix",
+    "format": "prettier --write \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
+    "format:check": "prettier --check \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
     "prepublishOnly": "npm run build"
   },
   "repository": {

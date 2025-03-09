@@ -1,0 +1,27 @@
+# Source files
+src/sample/
+src/__tests__/
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+jest.config.js
+
+# Development files
+.eslintrc.js
+.prettierrc
+.github/
+.vscode/
+.idea/
+.git/
+
+# Build artifacts
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# Misc
+node_modules/
+npm-debug.log
+yarn-error.log
+.DS_Store 
