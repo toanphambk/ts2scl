@@ -16,9 +16,9 @@
   "scripts": {
     "build": "tsc",
     "build:samples": "tsc -p src/sample/tsconfig.json",
-    "start": "ts-node --esm src/index.ts",
-    "cli": "ts-node --esm src/cli.ts",
-    "sample": "ts-node --esm src/sample/index.ts",
+    "start": "ts-node --esm --project tsconfig.node.json src/index.ts",
+    "cli": "ts-node --esm --project tsconfig.node.json src/cli.ts",
+    "sample": "ts-node --esm --project tsconfig.node.json src/sample/index.ts",
     "test": "jest",
     "lint": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\"",
     "lint:fix": "eslint \"src/core/**/*.ts\" \"src/utils/**/*.ts\" --fix",
