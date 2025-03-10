@@ -1,10 +1,10 @@
-# TS2SCL - TypeScript to Siemens SCL Converter
+# TS2SCL - TypeScript to Siemens SCL Converter Boilerplate
 
-A powerful tool that converts TypeScript code to Siemens Structured Control Language (SCL) for use in Siemens TIA Portal and PLC programming.
+A boilerplate project for converting TypeScript code to Siemens Structured Control Language (SCL) for use in Siemens TIA Portal and PLC programming.
 
 ## Overview
 
-TS2SCL allows you to write your PLC logic in TypeScript with special decorators and type annotations, then automatically converts it to SCL code that can be imported into Siemens TIA Portal. This approach brings modern programming practices, type safety, and better tooling to PLC development.
+TS2SCL is a boilerplate that allows you to write your PLC logic in TypeScript with special decorators and type annotations, then automatically converts it to SCL code that can be imported into Siemens TIA Portal. This approach brings modern programming practices, type safety, and better tooling to PLC development.
 
 ## Features
 
@@ -16,22 +16,46 @@ TS2SCL allows you to write your PLC logic in TypeScript with special decorators 
 - Support for complex data types and nested structures
 - Type-safe development with TypeScript's static type checking
 
-## Installation
+## Getting Started
+
+1. Clone this repository:
 
 ```bash
-npm install -g ts2scl
+git clone https://github.com/toanphambk/ts2scl.git
+cd ts2scl
 ```
 
-## Usage
+2. Install dependencies:
 
-1. Write your PLC logic in TypeScript using the provided decorators and types
-2. Run the converter to generate SCL code
-3. Import the generated SCL files into TIA Portal
+```bash
+npm install
+```
 
-### Basic Example
+3. Write your PLC logic in TypeScript using the provided decorators and types in the `src/logic` directory
+4. Build the project to generate SCL code:
+
+```bash
+npm run build
+```
+
+5. Find the generated SCL files in the `outScl` directory
+6. Import the generated SCL files into TIA Portal
+
+## Project Structure
+
+- `src/logic/` - Place your TypeScript PLC logic files here
+- `src/ts2scl/` - The core converter implementation
+- `outScl/` - Generated SCL output files
+
+## Usage Example
+
+### Define Types (UDTs)
 
 ```typescript
-// Define a UDT (User-Defined Type)
+// src/logic/sample-types.ts
+import { SCLType, SCLArray } from '../ts2scl/core/types/decorators';
+import { BOOL, INT, TIME, STRING, dim, REAL } from '../ts2scl/core/types/types';
+
 @SCLType()
 export class MotorConfig {
   SPEED_SETPOINT: REAL;
@@ -39,8 +63,16 @@ export class MotorConfig {
   MAX_SPEED: REAL;
   RAMP_TIME: TIME;
 }
+```
 
-// Define a Function Block
+### Define Function Blocks (FBs)
+
+```typescript
+// src/logic/sample-fb.ts
+import { SCLFunctionBlock, Input, Output, Static } from '../ts2scl/core/types/decorators';
+import { INT, BOOL, WORD } from '../ts2scl/core/types/types';
+import { DriveControllerInput, DriveControllerOutput } from './sample-types';
+
 @SCLFunctionBlock()
 export class DriveController {
   // Input variables
@@ -55,14 +87,11 @@ export class DriveController {
   @Static()
   lastSpeed: INT = 0;
 
-  // Methods become SCL code blocks
-  @OnStart()
   initialize() {
     this.lastSpeed = 0;
     this.output.STATUS_WORD = 0;
   }
 
-  @OnCycle()
   process() {
     if (this.input.ENABLE) {
       this.output.SPEED = this.calculateSpeed();
@@ -74,27 +103,9 @@ export class DriveController {
   }
 
   calculateSpeed(): INT {
-    // Implementation
     return this.input.SETPOINT;
   }
 }
-```
-
-## Command Line Interface
-
-```bash
-ts2scl --input src/logic --output outScl
-```
-
-## Development
-
-To build the project from source:
-
-```bash
-git clone https://github.com/yourusername/ts2scl.git
-cd ts2scl
-npm install
-npm run build
 ```
 
 ## License
