@@ -1,5 +1,0 @@
-DATA_BLOCK "motorA"
-VERSION : 0.1
-"DriveController"
-BEGIN
-END_DATA_BLOCK

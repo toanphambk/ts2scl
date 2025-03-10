@@ -1,7 +1,0 @@
-
-TYPE "DriveControlInput"
-STRUCT
-        enable : BOOL;
-        setSpeed : INT;
-END_STRUCT;
-END_TYPE

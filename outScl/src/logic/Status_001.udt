@@ -1,8 +1,0 @@
-
-TYPE "Status_001"
-STRUCT
-        STATE_IDLE : BOOL;
-        STATE_RUNNING : BOOL;
-        STATE_ERROR : BOOL;
-END_STRUCT;
-END_TYPE

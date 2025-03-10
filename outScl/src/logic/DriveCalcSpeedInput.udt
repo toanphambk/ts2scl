@@ -1,8 +1,0 @@
-
-TYPE "DriveCalcSpeedInput"
-STRUCT
-        enable : BOOL;
-        targetSpeed : INT;
-        status : WORD;
-END_STRUCT;
-END_TYPE

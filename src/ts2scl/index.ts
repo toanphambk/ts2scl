@@ -6,7 +6,8 @@ const outputDir = "outScl"
 
 const compile = async () => {
     const compiler = new MainCompiler();
-    const inputFiles = await readdir(inputDir);
+    const inputFiles = await readdir(inputDir, { recursive: true }).then(files => files.filter(file => file.endsWith('.ts')));
+
     for (const file of inputFiles) {
         await compiler.compile(`${inputDir}/${file}`, outputDir);
     }
