@@ -1,0 +1,13 @@
+
+TYPE "CronJob_001"
+STRUCT
+        ID : INT;
+        NAME : STRING;
+        STATUS : STRING;
+        LAST_RUN : TIME;
+        NEXT_RUN : TIME;
+        INTERVAL : TIME;
+        PARAMS : STRING;
+        CRON_EXPRESSION : STRING;
+END_STRUCT;
+END_TYPE

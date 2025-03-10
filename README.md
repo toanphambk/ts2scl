@@ -1,174 +1,106 @@
-# TS2SCL
+# TS2SCL - TypeScript to Siemens SCL Converter
 
-A TypeScript to Siemens SCL converter that transforms TypeScript types and structures into equivalent SCL (Structured Control Language) code for Siemens TIA Portal.
+A powerful tool that converts TypeScript code to Siemens Structured Control Language (SCL) for use in Siemens TIA Portal and PLC programming.
+
+## Overview
+
+TS2SCL allows you to write your PLC logic in TypeScript with special decorators and type annotations, then automatically converts it to SCL code that can be imported into Siemens TIA Portal. This approach brings modern programming practices, type safety, and better tooling to PLC development.
 
 ## Features
 
-- Converts TypeScript types to SCL types
-- Supports:
-  - Basic types (number, boolean, string)
-  - Arrays (1D, 2D, and 3D)
-  - Complex structures and nested types
-  - Enums
-  - Type aliases
-- Generates SCL code for:
-  - Data Blocks (DBs)
-  - Function Blocks (FBs)
-  - Functions (FCs)
-
-## Project Structure
-
-```
-ts2scl/
-├── src/
-│   ├── core/           # Core conversion functionality
-│   │   ├── base/       # Base classes and interfaces
-│   │   ├── compilers/  # Type compilers
-│   │   ├── generators/ # SCL code generators
-│   │   ├── types/      # Type definitions and decorators
-│   │   └── index.ts    # Main compiler entry point
-│   └── utils/          # Utility functions
-├── dist/               # Compiled JavaScript output
-└── ...
-```
+- Convert TypeScript classes to SCL User-Defined Types (UDTs)
+- Convert TypeScript functions to SCL Functions (FCs)
+- Convert TypeScript classes with methods to SCL Function Blocks (FBs)
+- Convert TypeScript variables to SCL Data Blocks (DBs)
+- Support for arrays with multiple dimensions
+- Support for complex data types and nested structures
+- Type-safe development with TypeScript's static type checking
 
 ## Installation
 
 ```bash
-# Install from npm
-npm install ts2scl
-
-# Or clone and install dependencies
-git clone https://github.com/toanphambk/ts2scl.git
-cd ts2scl
-npm install
+npm install -g ts2scl
 ```
 
 ## Usage
 
-### Using the CLI
+1. Write your PLC logic in TypeScript using the provided decorators and types
+2. Run the converter to generate SCL code
+3. Import the generated SCL files into TIA Portal
 
-```bash
-# Build the project
-npm run build
-
-# Run tests
-npm test
-```
-
-### API Usage
+### Basic Example
 
 ```typescript
-import { convertTypeToSCL } from 'ts2scl';
-
-// Define your TypeScript type
-interface Motor {
-  speed: number;
-  isRunning: boolean;
-  name: string;
-}
-
-// Convert to SCL
-const sclCode = convertTypeToSCL<Motor>('Motor');
-console.log(sclCode);
-```
-
-### Using Decorators
-
-```typescript
-import { SCLType, SCLArray, BOOL, INT, REAL, dim } from 'ts2scl';
-
+// Define a UDT (User-Defined Type)
 @SCLType()
 export class MotorConfig {
   SPEED_SETPOINT: REAL;
-  IS_RUNNING: BOOL;
-
-  @SCLArray([dim(0, 9)])
-  SPEED_HISTORY: INT[];
+  ACCELERATION: REAL;
+  MAX_SPEED: REAL;
+  RAMP_TIME: TIME;
 }
-```
 
-### Creating Data Blocks
+// Define a Function Block
+@SCLFunctionBlock()
+export class DriveController {
+  // Input variables
+  @Input()
+  input: DriveControllerInput;
 
-```typescript
-import { SCLDb, Retain, BOOL, INT, TIME } from 'ts2scl';
-import { MotorConfig } from './types';
+  // Output variables
+  @Output()
+  output: DriveControllerOutput;
 
-@SCLDb({
-  version: '1.0',
-  optimizedAccess: true,
-  dbAccessibleFromOPCUA: true,
-})
-export class MotorDB {
-  @Retain()
-  public CONFIG: MotorConfig;
-
-  @Retain()
-  public CYCLE_COUNT: INT;
-
-  public LAST_CYCLE_TIME: TIME;
-}
-```
-
-### Creating Function Blocks
-
-```typescript
-import { SCLFB, Static, Input, Output, Retain, BOOL, INT } from 'ts2scl';
-import { MotorInput, MotorOutput } from './types';
-
-@SCLFB()
-export class MotorController {
+  // Static variables
   @Static()
-  @Retain()
-  public lastSpeed: INT;
+  lastSpeed: INT = 0;
 
-  public exec(@Input({}) input: MotorInput, @Output({}) output: MotorOutput): void {
-    // Function block implementation
+  // Methods become SCL code blocks
+  @OnStart()
+  initialize() {
+    this.lastSpeed = 0;
+    this.output.STATUS_WORD = 0;
+  }
+
+  @OnCycle()
+  process() {
+    if (this.input.ENABLE) {
+      this.output.SPEED = this.calculateSpeed();
+      this.output.STATUS_WORD = 1;
+    } else {
+      this.output.SPEED = 0;
+      this.output.STATUS_WORD = 0;
+    }
+  }
+
+  calculateSpeed(): INT {
+    // Implementation
+    return this.input.SETPOINT;
   }
 }
 ```
 
-## Type Mappings
+## Command Line Interface
 
-TypeScript to SCL type mappings:
-
-| TypeScript      | SCL              |
-| --------------- | ---------------- |
-| number (int)    | INT              |
-| number (float)  | REAL             |
-| boolean         | BOOL             |
-| string          | STRING           |
-| Array<T>        | ARRAY[x..y] OF T |
-| interface/class | STRUCT           |
-| enum            | INT              |
+```bash
+ts2scl --input src/logic --output outScl
+```
 
 ## Development
 
+To build the project from source:
+
 ```bash
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Build project
+git clone https://github.com/yourusername/ts2scl.git
+cd ts2scl
+npm install
 npm run build
 ```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Author
-
-- Toan Pham - [toanphambk@gmail.com](mailto:toanphambk@gmail.com)
 
 ## License
 
 MIT
+
+## Author
+
+Toan Pham <toanphambk@gmail.com>

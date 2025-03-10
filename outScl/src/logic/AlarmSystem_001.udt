@@ -1,0 +1,7 @@
+
+TYPE "AlarmSystem_001"
+STRUCT
+        CONFIG : "AlarmConfig_001";
+        HISTORY : "AlarmConfig_001";
+END_STRUCT;
+END_TYPE

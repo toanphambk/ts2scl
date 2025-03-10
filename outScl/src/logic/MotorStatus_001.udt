@@ -1,0 +1,10 @@
+
+TYPE "MotorStatus_001"
+STRUCT
+        ACTUAL_SPEED : REAL;
+        IS_RUNNING : BOOL;
+        ERROR_CODE : INT;
+        RUNTIME : TIME;
+        ENERGY_CONSUMPTION : REAL;
+END_STRUCT;
+END_TYPE

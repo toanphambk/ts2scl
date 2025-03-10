@@ -1,0 +1,11 @@
+
+TYPE "MotorConfig_001"
+STRUCT
+        SPEED_SETPOINT : REAL;
+        ACCELERATION : REAL;
+        DECELERATION : REAL;
+        MAX_SPEED : REAL;
+        MIN_SPEED : REAL;
+        RAMP_TIME : TIME;
+END_STRUCT;
+END_TYPE

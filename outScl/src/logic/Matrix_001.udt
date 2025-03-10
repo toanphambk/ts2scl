@@ -1,0 +1,11 @@
+
+TYPE "Matrix_001"
+STRUCT
+        GRID_INT : ARRAY[0..3,0..3] OF INT;
+        GRID_REAL : ARRAY[0..3,0..3] OF REAL;
+        GRID_BOOL : ARRAY[0..3,0..3] OF BOOL;
+        CUBE_INT : ARRAY[0..3,0..3,0..3] OF INT;
+        CUBE_REAL : ARRAY[0..3,0..3,0..3] OF REAL;
+        CUBE_BOOL : ARRAY[0..3,0..3,0..3] OF BOOL;
+END_STRUCT;
+END_TYPE

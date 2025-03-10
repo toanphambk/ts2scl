@@ -1,0 +1,9 @@
+
+TYPE "SensorData_001"
+STRUCT
+        VALUE : REAL;
+        QUALITY : INT;
+        LAST_UPDATE : TIME;
+        IS_VALID : BOOL;
+END_STRUCT;
+END_TYPE

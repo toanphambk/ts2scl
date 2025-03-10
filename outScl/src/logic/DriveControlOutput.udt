@@ -1,0 +1,7 @@
+
+TYPE "DriveControlOutput"
+STRUCT
+        driveStatus : WORD;
+        actualSpeed : INT;
+END_STRUCT;
+END_TYPE

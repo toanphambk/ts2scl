@@ -1,0 +1,8 @@
+
+TYPE "ProcessData_001"
+STRUCT
+        POSITION : INT;
+        VELOCITY : REAL;
+        IS_MOVING : BOOL;
+END_STRUCT;
+END_TYPE

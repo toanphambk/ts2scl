@@ -1,0 +1,19 @@
+
+TYPE "ComplexTest_001"
+STRUCT
+        CONFIG : "Config_001";
+        MOTOR_CONFIG : "MotorConfig_001";
+        STATUS : "Status_001";
+        AXIS_STATUS : "Axis3D_001";
+        MOTOR_HISTORY : ARRAY[0..5] OF "MotorStatus_001";
+        SENSOR_GRID : ARRAY[0..3,0..3] OF "SensorData_001";
+        TEMPERATURE_CUBE : ARRAY[0..2,0..2,0..2] OF REAL;
+        HOURLY_TIMESTAMPS : ARRAY[0..23] OF TIME;
+        PROCESS_HISTORY : ARRAY[0..99] OF "ProcessData_001";
+        ALARM_SYSTEM : "AlarmSystem_001";
+        MATRIX : "Matrix_001";
+        TIME_TEST : "TimeTest_001";
+        PERFORMANCE_DATA : ARRAY[0..999] OF REAL;
+        SENSOR_ARRAY : ARRAY[0..9] OF "SensorData_001";
+END_STRUCT;
+END_TYPE

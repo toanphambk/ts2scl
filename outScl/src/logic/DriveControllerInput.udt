@@ -1,0 +1,10 @@
+
+TYPE "DriveControllerInput"
+STRUCT
+        parameters : INT;
+        enable : BOOL;
+        targetSpeed : INT;
+        safetyEnabled : BOOL;
+        speedLimits : ARRAY[0..9] OF INT;
+END_STRUCT;
+END_TYPE
