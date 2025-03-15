@@ -15,7 +15,8 @@
     "src/"
   ],
   "scripts": {
-    "build": "npx tsx ./src/ts2scl/index.ts"
+    "build": "npx tsx ./src/ts2scl/index.ts -i  ./src/logic/ -o dist",
+    "compile": ".\\bin\\tia.exe --source dist\\src\\logic\\ --target dist\\src\\logic\\"
   },
   "keywords": [
     "typescript",
