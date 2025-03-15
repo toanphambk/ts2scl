@@ -1,6 +1,8 @@
 import { readdir } from "fs/promises";
 import { MainCompiler } from "./core/compilers/main-compiler";
 import { Command } from "commander";
+import { rmSync } from "fs";
+import { existsSync } from "fs";
 
 // Create command line interface
 const program = new Command();
@@ -20,6 +22,10 @@ const outputDir = options.output;
 
 const compile = async () => {
     const compiler = MainCompiler.getInstance();
+
+    if (existsSync(outputDir)) {
+        rmSync(outputDir, { recursive: true, force: true });
+    }
 
     try {
         // Check if input path is a file with .ts extension
