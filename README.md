@@ -41,6 +41,47 @@ npm run build
 5. Find the generated SCL files in the `outScl` directory
 6. Import the generated SCL files into TIA Portal
 
+## CLI Usage
+
+TS2SCL now supports command-line arguments for specifying input and output paths:
+
+```bash
+# Default usage (uses src/logic/ as input and dist as output)
+npm run build
+
+# Compile a specific directory
+npm run build:dir
+# or with custom paths
+npx tsx ./src/ts2scl/index.ts -i src/custom-logic/ -o custom-output/
+
+# Compile a single file
+npm run build:file src/logic/my-file.ts -o dist/
+# or directly with npx
+npx tsx ./src/ts2scl/index.ts -i src/logic/my-file.ts -o dist/
+
+# Using the compile script with custom parameters
+npm run compile src/logic/sample-fb.ts -o dist/
+```
+
+Available options:
+
+- `-i, --input <path>`: Input file or directory path (default: "src/logic/")
+- `-o, --output <path>`: Output directory path (default: "dist")
+
+### Passing Parameters to npm Scripts
+
+When using npm scripts, you need to use the `--` separator to pass parameters to the underlying command:
+
+```bash
+# Compile a specific file to a custom output directory
+npm run compile -- src/logic/sample-fb.ts -o custom-output/
+
+# Compile a specific directory to a custom output directory
+npm run build -- -i src/custom-logic/ -o custom-output/
+```
+
+This ensures that the parameters are passed to the script and not interpreted as npm arguments.
+
 ## Project Structure
 
 - `src/logic/` - Place your TypeScript PLC logic files here

@@ -1,4 +1,4 @@
-import { SCLType, SCLFn, Input, Output, Instance } from "../ts2scl/core/types/decorators";
+import { SCLType, SCLFc, Input, Output, Instance } from "../ts2scl/core/types/decorators";
 import { BOOL, INT, WORD, REAL, TIME, STRING } from "../ts2scl/core/types/types";
 import { DriveController, DriveControllerInput, DriveControllerOutput } from "./sample-fb";
 
@@ -41,7 +41,7 @@ export class DriveControlOutput {
 }
 
 // Example of a Function (FC) - Pure function with no /instance data
-@SCLFn()
+@SCLFc()
 export class DriveCalculateSpeed {
   public static exec(
     @Input({}) input: DriveCalcSpeedInput,
@@ -105,12 +105,12 @@ export class DriveCalculateSpeed {
 }
 
 // Another example of a Function (FC)
-@SCLFn()
+@SCLFc()
 export class DriveControl {
-  @Instance('multiple')
+  @Instance('single')
   public static motorA: DriveController
 
-  @Instance('multiple')
+  @Instance('single')
   public static motorB: DriveController
 
   public static exec(
@@ -126,7 +126,6 @@ export class DriveControl {
     calcSpeedInput.parameters = 0;
     calcSpeedInput.safetyEnabled = false;
     calcSpeedInput.speedLimits = [];
-
     let calcSpeedOutput: DriveControllerOutput = {} as DriveControllerOutput;
     calcSpeedOutput.status = 0;
     calcSpeedOutput.errorStatus = 0;
@@ -152,7 +151,7 @@ export class DriveControl {
 /**
  * Example function demonstrating various comparison operations in SCL
  */
-@SCLFn()
+@SCLFc()
 export class ComparisonTest {
   public static exec(
     // Integer inputs

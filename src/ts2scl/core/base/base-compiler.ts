@@ -9,6 +9,9 @@ import { SCLBlockMetadata } from '../types/metadata-types';
 import ts from 'typescript';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { normalize, resolve } from 'path';
+import { DecoratorUtils } from '../../utils/decorator-utils';
+import { PropertyUtils } from '../../utils/property-utils';
+import { MainCompiler } from '../compilers/main-compiler';
 
 export abstract class BaseCompiler {
   protected readonly logger: Logger;
@@ -18,24 +21,19 @@ export abstract class BaseCompiler {
   }
 
   /**
-   * Main compilation method template
+   * Generates code for a specific type without writing to file
+   * @param inputPath Path to the TypeScript source file
+   * @param metadata Metadata for the block
+   * @param program TypeScript program
+   * @param sourceFile TypeScript source file
+   * @returns Generated SCL code as string
    */
-  public async compile(inputPath: string, outputPath: string): Promise<boolean> {
-    try {
-      await this.Compile(inputPath, outputPath);
-
-      this.logger.info('Compilation completed successfully');
-      return true;
-    } catch (error) {
-      this.logger.error('Compilation failed', { message: (error as Error).message });
-      return false;
-    }
-  }
-
-  /**
-   * Abstract method to be implemented by specific compilers
-   */
-  protected abstract Compile(inputPath: string, outputPath: string): Promise<void>;
+  public abstract generateCode(
+    inputPath: string,
+    metadata: SCLBlockMetadata,
+    program: ts.Program,
+    sourceFile: ts.SourceFile
+  ): Promise<string>;
 
   /**
    * Creates TypeScript program for parsing source
@@ -90,6 +88,39 @@ export abstract class BaseCompiler {
     }
 
     return { program, sourceFile };
+  }
+
+  public getInstanceDBMetadata(classDecl: ts.ClassDeclaration): { name: string; sclType: string; instanceType: string }[] {
+    const instances = classDecl.members.
+      filter(member => ts.isPropertyDeclaration(member) && DecoratorUtils.hasDecorator(member, 'Instance'))
+      .map(prop => {
+        const propDecl = prop as ts.PropertyDeclaration;
+        const name = PropertyUtils.extractPropertyName(propDecl);
+        const sclType = PropertyUtils.extractType(propDecl);
+        const metadata = MainCompiler.getInstance().getBlockMetadata(name, 'FB');
+        return {
+          name,
+          sclType: sclType ?? '',
+          instanceType: metadata?.blockOptions.instanceType ?? ''
+        };
+      });
+
+    return instances;
+  }
+
+  /**
+   * Generates an instance DB for a given instance name and type
+   */
+  public generateInstanceDB(instanceName: string, instanceType: string): string {
+    const sections = [
+      `DATA_BLOCK "${instanceName}"`,
+      'VERSION : 0.1',
+      `${instanceType}`,
+      'BEGIN',
+      'END_DATA_BLOCK'
+    ];
+
+    return sections.join('\n');
   }
 
   /**

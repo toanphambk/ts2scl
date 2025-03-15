@@ -60,7 +60,7 @@ export class FunctionGenerator extends BaseFunctionGenerator {
         // Verify the class has the SCLFn decorator
         const metadata = DecoratorUtils.extractDecoratorMetadata(
             classDecl,
-            'SCLFn',
+            'SCLFc',
             () => ({
                 name,
                 category: 'FC' as SCLCategory,

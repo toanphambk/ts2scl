@@ -313,6 +313,7 @@ export interface SCLBlockOptions extends BaseOptions {
   readonly nonRetain?: boolean;
   readonly returnType?: SCLTypeEnum | string;
   readonly instanceType?: SCLInstanceType;
+  readonly sclInstruction?: string;
 }
 
 export interface SCLPropertyOptions extends BaseOptions {

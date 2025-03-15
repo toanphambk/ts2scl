@@ -3,7 +3,7 @@
  * Defines the structure and types for SCL metadata handling
  */
 
-import { SCLBlockOptions, SCLCategory, SCLPropertyOptions } from "./types";
+import { SCLBlockOptions, SCLPropertyOptions } from "./types";
 /**
  * Metadata for SCL blocks including both block-level and property-level configuration
  */

@@ -5,8 +5,9 @@ import { NodeUtils } from '../../../utils/node-utils.js';
 import { SCLStatementGenerator } from './statement-generator.js';
 import { DecoratorUtils } from '../../../utils/decorator-utils.js';
 import { SCLSectionGenerator } from './section-generator.js';
-import { SCLVarType, SCLBlockOptions, SCLPropertyOptions, SCLCategory, SCLTypeEnum } from '../../types/types.js';
+import { SCLVarType, SCLPropertyOptions, SCLTypeEnum } from '../../types/types.js';
 import { PropertyUtils } from '../../../utils/property-utils.js';
+import { MainCompiler } from '../../compilers/main-compiler.js';
 
 export abstract class BaseFunctionGenerator extends BaseGenerator {
     protected statementGenerator?: SCLStatementGenerator;
@@ -69,38 +70,6 @@ export abstract class BaseFunctionGenerator extends BaseGenerator {
             externalWritable: visibilityMetadata.externalWritable,
             externalAccessible: visibilityMetadata.externalAccessible
         };
-    }
-
-    public getInstanceDBMetadata(classDecl: ts.ClassDeclaration): { name: string; sclType: string; instanceType: string }[] {
-        const instances = classDecl.members.
-            filter(member => ts.isPropertyDeclaration(member) && DecoratorUtils.hasDecorator(member, 'Instance'))
-            .map(prop => {
-                const propDecl = prop as ts.PropertyDeclaration;
-                const name = PropertyUtils.extractPropertyName(propDecl);
-                const sclType = PropertyUtils.extractType(propDecl);
-                return {
-                    name,
-                    sclType: sclType ?? '',
-                    instanceType: sclType ?? ''  // Use the SCL type as the instance type
-                };
-            });
-
-        return instances;
-    }
-
-    /**
-     * Generates an instance DB for a given instance name and type
-     */
-    public generateInstanceDB(instanceName: string, instanceType: string): string {
-        const sections = [
-            `DATA_BLOCK "${instanceName}"`,
-            'VERSION : 0.1',
-            `${instanceType}`,
-            'BEGIN',
-            'END_DATA_BLOCK'
-        ];
-
-        return sections.join('\n');
     }
 
     protected generateVarSectionForMethod(

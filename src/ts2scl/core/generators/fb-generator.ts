@@ -74,7 +74,7 @@ export class FunctionBlockGenerator extends BaseFunctionGenerator {
 
         const metadata = DecoratorUtils.extractDecoratorMetadata(
             classDecl,
-            'SCLFB',
+            'SCLFb',
             (args) => ({
                 name,
                 category: 'FB' as SCLCategory
@@ -82,7 +82,7 @@ export class FunctionBlockGenerator extends BaseFunctionGenerator {
         );
 
         if (!metadata) {
-            this.logger.error(`No valid SCLFB decorator found for class ${name}`);
+            this.logger.error(`No valid SCLFb decorator found for class ${name}`);
             return null;
         }
 

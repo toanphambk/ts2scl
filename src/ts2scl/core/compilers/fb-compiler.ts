@@ -7,7 +7,6 @@
  * 2. Parsing and validating the TypeScript AST
  * 3. Extracting function block metadata from decorators
  * 4. Coordinating with FunctionBlockGenerator to produce SCL code
- * 5. Writing the generated SCL to output files
  * 
  * Example input:
  * ```ts
@@ -27,88 +26,94 @@
  * ```
  */
 
-import { writeFileSync } from 'fs';
-import { resolve } from 'path';
+import ts from 'typescript';
 import { BaseCompiler } from '../base/base-compiler.js';
 import { getSCLMetadata } from '../../utils/metadata-utils.js';
 import { FunctionBlockGenerator } from '../generators/fb-generator.js';
 import { LogLevel } from '../../utils/logger.js';
-
+import { SCLBlockMetadata } from '../types/metadata-types.js';
+import { InstanceDBGenerator } from '../generators/instance-generator.js';
+import { SCLInstanceType } from '../types/types.js';
 export class FunctionBlockCompiler extends BaseCompiler {
+    private static instance: FunctionBlockCompiler;
     private readonly generator: FunctionBlockGenerator;
+    private readonly instanceDBGenerator: InstanceDBGenerator;
 
-    constructor() {
+    private constructor() {
         super();
         this.generator = new FunctionBlockGenerator();
+        this.instanceDBGenerator = InstanceDBGenerator.getInstance();
         this.logger.setLogLevel(LogLevel.DEBUG);
     }
 
-    protected async Compile(inputPath: string, outputPath: string): Promise<void> {
-        try {
-            this.logger.debug('Starting function block compilation', { inputPath });
-            const { program, sourceFile } = this.createTypeScriptProgram(inputPath);
-            const fbTypes = await this.getFBTypes(inputPath);
+    /**
+     * Gets the singleton instance of FunctionBlockCompiler
+     * @returns The singleton instance
+     */
+    public static getInstance(): FunctionBlockCompiler {
+        if (!FunctionBlockCompiler.instance) {
+            FunctionBlockCompiler.instance = new FunctionBlockCompiler();
+        }
+        return FunctionBlockCompiler.instance;
+    }
 
+    /**
+     * Generates SCL code for a function block
+     * @param inputPath Path to the TypeScript source file
+     * @param metadata Metadata for the function block
+     * @param program TypeScript program
+     * @param sourceFile TypeScript source file
+     * @returns Generated SCL code as string
+     */
+    public async generateCode(
+        inputPath: string,
+        metadata: SCLBlockMetadata,
+        program: ts.Program,
+        sourceFile: ts.SourceFile
+    ): Promise<string> {
+        try {
+            this.logger.debug('Generating function block code', { blockName: metadata.blockOptions.name });
+            const blockName = metadata.blockOptions.name;
+
+            // Set the source file and program for the generator
             this.generator.setSourceFile(sourceFile, program);
 
-            for (const type of fbTypes) {
-                const metadata = getSCLMetadata(type);
-                const blockName = this.validateBlockName(metadata, type);
-                const classDeclaration = this.getClassDeclaration(sourceFile, blockName);
-                const blockContent = this.generator.generateFunctionBlockContent(classDeclaration);
-                const blockOutputPath = resolve(outputPath, `${blockName}.fb.scl`);
+            // Get the class declaration
+            const classDeclaration = this.getClassDeclaration(sourceFile, blockName);
 
-                writeFileSync(blockOutputPath, blockContent, 'utf8');
-                this.logger.info('Successfully wrote function block file', { blockName, outputPath: blockOutputPath });
-            }
+            // Generate the function block content
+            return this.generator.generateFunctionBlockContent(classDeclaration);
         } catch (error) {
-            this.handleCompilationError(error, inputPath, outputPath);
-        }
-    }
-
-    private handleCompilationError(error: unknown, inputPath: string, outputPath: string): never {
-        this.logger.error('Failed to compile function blocks', {
-            error: error instanceof Error ? error : new Error(String(error)),
-            inputPath,
-            outputPath,
-        });
-        throw error;
-    }
-
-
-    protected async getFBTypes(inputTypesDir: string): Promise<Function[]> {
-        try {
-            const fileUrl = this.pathToFileUrl(inputTypesDir);
-
-            this.logger.debug(`Importing from URL: ${fileUrl}`);
-
-            let inputTypes;
-            try {
-                inputTypes = await import(fileUrl);
-            } catch (error) {
-                this.logger.error('Error importing module', {
-                    error: error instanceof Error ? error : new Error(String(error)),
-                    fileUrl,
-                });
-                throw error;
-            }
-
-            const fbTypes = Object.values(inputTypes).filter(this.isFBType);
-            this.logger.debug(`Found ${fbTypes.length} FB types`);
-
-            return fbTypes;
-        } catch (error) {
-            this.logger.error('Failed to get FB types', {
+            this.logger.error('Failed to generate function block code', {
                 error: error instanceof Error ? error : new Error(String(error)),
-                inputTypesDir,
+                blockName: metadata.blockOptions.name
             });
             throw error;
         }
     }
 
-    private isFBType(value: unknown): value is Function {
-        if (typeof value !== 'function') return false;
-        const metadata = getSCLMetadata(value);
-        return metadata.blockOptions?.category === 'FB';
+    public getInstanceDBs(
+        metadata: SCLBlockMetadata,
+        sourceFile: ts.SourceFile
+    ): { name: string, instanceType: SCLInstanceType, instanceSclType: string, sclInstruction?: string }[] {
+        try {
+            const blockName = metadata.blockOptions.name;
+            const classDeclaration = this.getClassDeclaration(sourceFile, blockName);
+            return this.instanceDBGenerator.getInstanceDBMetadata(classDeclaration, 'FB');
+        } catch (error) {
+            this.logger.error('Failed to get instance DBs', {
+                error: error instanceof Error ? error : new Error(String(error)),
+                blockName: metadata.blockOptions.name
+            });
+            return [];
+        }
+    }
+    /**
+      * Collects metadata from a file without generating output
+      * @param inputPath Path to the TypeScript source file
+      */
+    protected async CollectMetadata(inputPath: string): Promise<void> {
+        // This is now handled by MainCompiler
+        this.logger.debug('CollectMetadata is now handled by MainCompiler');
     }
 } 

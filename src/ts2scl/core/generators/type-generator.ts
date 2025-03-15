@@ -11,6 +11,7 @@ export class TypeGenerator extends BaseGenerator {
 
   public sclContentParse(metadata: SCLBlockMetadata, node: ts.ClassDeclaration): string {
     this.validateNode(node);
+    console.log(metadata.blockOptions);
 
     return [
       this.generateBlockAttributes(metadata.blockOptions),

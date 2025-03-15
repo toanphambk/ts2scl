@@ -1,7 +1,8 @@
 
-import { SCLType, SCLArray, SCLFB, Static, Retain, Input, Output } from '../ts2scl/core/types/decorators.js';
-import { INT, BOOL, dim, WORD } from '../ts2scl/core/types/types.js';
-import { DriveCalcSpeedInput, DriveCalcSpeedOutput, DriveControl, DriveControlInput, DriveControlOutput } from './sample-fc.js';
+import { SCLType, SCLArray, SCLFb, Static, Retain, Input, Output, Instance } from '../ts2scl/core/types/decorators.js';
+import { INT, BOOL, dim, WORD, TIME } from '../ts2scl/core/types/types.js';
+import { TON_TIME, RESET_TIMER } from '../ts2scl/scl-instruction.js';
+import { DriveCalcSpeedInput, DriveCalcSpeedOutput, DriveCalculateSpeed, DriveControl, DriveControlInput, DriveControlOutput } from './sample-fc.js';
 
 /**
  * Enhanced DriveController Function Block
@@ -37,7 +38,7 @@ export class DriveControllerOutput {
     @SCLArray([dim(0, 9)])
     speedHistory: INT[];
 }
-@SCLFB()
+@SCLFb()
 export class DriveController {
     // arrays for tracking history
     @Static() @SCLArray([dim(0, 4)])
@@ -69,6 +70,9 @@ export class DriveController {
     @Static() @Retain()
     public totalRuntime: INT;
 
+    @Instance('multiple')
+    public delayOn: TON_TIME;
+
     @Static()
     public safetyStatus: WORD;
 
@@ -88,12 +92,18 @@ export class DriveController {
         let calcSpeedOutput: DriveCalcSpeedOutput = {} as DriveCalcSpeedOutput;
         let driveCtrlInput: DriveControlInput = {} as DriveControlInput;
         let driveCtrlOutput: DriveControlOutput = {} as DriveControlOutput;
+        let delayTime: TIME = "1s";
         calcSpeedInput.enable = false;
         calcSpeedInput.targetSpeed = 0;
         calcSpeedInput.status = 0x0000;
 
+
         let errorCounter: INT = 0;
         let validationStatus: BOOL = false;
+        DriveCalculateSpeed.exec(calcSpeedInput, calcSpeedOutput);
+
+        this.delayOn.TON(calcSpeedInput.enable, "1s");
+        RESET_TIMER.exec(this.delayOn);
 
         // Process error count with a while loop
         while (errorCounter < this.errorCount) {
@@ -237,6 +247,3 @@ export class DriveController {
         output.runtime = this.totalRuntime;
     }
 }
-
-
-

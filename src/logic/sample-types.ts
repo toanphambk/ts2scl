@@ -170,17 +170,3 @@ export class ComplexTest_001 {
   @SCLArray([dim(0, 9)])
   SENSOR_ARRAY: SensorData_001[];
 }
-
-
-//cronjob
-@SCLType()
-export class CronJob_001 {
-  ID: INT;
-  NAME: STRING;
-  STATUS: STRING;
-  LAST_RUN: TIME;
-  NEXT_RUN: TIME;
-  INTERVAL: TIME;
-  PARAMS: STRING;
-  CRON_EXPRESSION: STRING;
-}

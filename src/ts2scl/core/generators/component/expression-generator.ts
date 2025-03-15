@@ -4,7 +4,12 @@ import { NodeUtils } from '../../../utils/node-utils.js';
 import { PropertyUtils } from '../../../utils/property-utils.js';
 import { TypeExtractor } from '../../../utils/type-extractor.js';
 import { SCLTypeEnum } from '../../types/types.js';
-
+import { getPropertyMetadata, getSCLMetadata } from '../../../utils/metadata-utils.js';
+import { METADATA_KEYS } from '../../types/metadata-types.js';
+import { DecoratorUtils } from '../../../utils/decorator-utils.js';
+import { FunctionBlockCompiler } from '../../compilers/fb-compiler.js';
+import { MainCompiler } from '../../compilers/main-compiler.js';
+import { SCLCategory } from '../../types/types';
 /*==============================================================================
   TYPES & CONFIGURATIONS
 ==============================================================================*/
@@ -209,6 +214,7 @@ const OPERATOR_MAP = new Map<ts.SyntaxKind, OperatorInfo>([
     [ts.SyntaxKind.EqualsEqualsEqualsToken, { sclOperator: '=', precedence: OperatorPrecedence.Equality }],
     [ts.SyntaxKind.ExclamationEqualsToken, { sclOperator: '<>', precedence: OperatorPrecedence.Equality }],
     [ts.SyntaxKind.ExclamationEqualsEqualsToken, { sclOperator: '<>', precedence: OperatorPrecedence.Equality }],
+
 ]);
 
 /*==============================================================================
@@ -631,9 +637,15 @@ export class SCLExpressionGenerator extends BaseGenerator {
         if (ts.isIdentifier(instance)) {
             const classDecl = NodeUtils.findClassDeclaration(this.sourceFile, instance.text);
             const staticMethod = classDecl && NodeUtils.findMethodInClass(classDecl, methodName, [ts.SyntaxKind.StaticKeyword]);
-            if (staticMethod) {
-                return `"${instance.text}"(${this.generateFunctionArgs(node, staticMethod).join(',\n')})`;
+            const fcMetaData = MainCompiler.getInstance().getBlockMetadata(instance.text, 'FC');
+            const isSclInstruction = fcMetaData?.blockOptions.sclInstruction
+            if (!staticMethod) {
+                throw new Error(`Could not find method ${methodName} in class ${instance.text}`);
             }
+            if (isSclInstruction) {
+                return `${instance.text}(${this.generateFunctionArgs(node, staticMethod).join(',\n')})`;
+            }
+            return `"${instance.text}"(${this.generateFunctionArgs(node, staticMethod).join(',\n')})`;
         }
 
         // Instance call: find instance type from a class member.
@@ -655,14 +667,21 @@ export class SCLExpressionGenerator extends BaseGenerator {
         if (!instanceType) {
             throw new Error(`Could not determine type for instance ${this.generateExpression(instance)}`);
         }
+
         const classDecl = NodeUtils.findClassDeclaration(this.sourceFile, instanceType);
+        //get meta data from class declaration
         if (!classDecl) throw new Error(`Could not find class declaration for type ${instanceType}`);
         const methodDecl = NodeUtils.findMethodInClass(classDecl, methodName);
+
+
         if (!methodDecl) throw new Error(`Could not find method ${methodName} in class ${instanceType}`);
         const args = this.generateFunctionArgs(node, methodDecl);
-        // Remove '#' prefix from instance name.
+        // Remove '#' prefix from instance name if not scl instruction
+        const fbMetaData = MainCompiler.getInstance().getBlockMetadata(instanceType ?? '', 'FB');
+        const isSclInstruction = fbMetaData?.blockOptions.sclInstruction ? '#' : '';
+
         const instanceName = this.generateExpression(instance).replace('#', '');
-        return `"${instanceName}"(${args.join(',\n')})`;
+        return `${isSclInstruction}"${instanceName}"(${args.join(',\n')})`;
     }
 
     private extractCallInfo(node: ts.CallExpression): { className: string } {
@@ -687,10 +706,20 @@ export class SCLExpressionGenerator extends BaseGenerator {
     private generateFunctionArgs(node: ts.CallExpression, method: ts.MethodDeclaration): string[] {
         return node.arguments.map((arg, i) => {
             const param = method.parameters[i];
-            if (!param || !ts.isIdentifier(param.name)) return '';
-            const argVal = this.generateExpression(arg);
-            if (!argVal) return '';
+            let argVal: string | undefined;
             const op = PropertyUtils.isOutputParameter(param) ? '=>' : ':=';
+            if (!param || !ts.isIdentifier(param.name)) {
+                throw new Error(`Could not determine type for parameter ${param.name}`);
+            }
+
+            if (ts.isLiteralExpression(arg)) {
+                const paramType = param?.type ? NodeUtils.extractTypeName(param.type) : undefined;
+                if (!paramType) throw new Error(`Could not determine type for parameter ${param.name}`);
+                argVal = TypeExtractor.extractValue(arg, paramType);
+            } else {
+                argVal = this.generateExpression(arg);
+            }
+            if (!argVal) return '';
             return `${param.name.text} ${op} ${argVal}`;
         }).filter(Boolean);
     }

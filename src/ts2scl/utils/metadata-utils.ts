@@ -5,7 +5,10 @@
 
 import 'reflect-metadata';
 import { SCLBlockMetadata, METADATA_KEYS, MetadataKey } from '../core/types/metadata-types.js';
-import { SCLBlockOptions, SCLPropertyOptions, SCLCategory } from '../core/types/types.js';
+import { SCLBlockOptions, SCLPropertyOptions } from '../core/types/types.js';
+
+
+
 
 /**
  * Gets metadata for a given key from a target
@@ -17,23 +20,35 @@ export function getMetadata<T>(key: MetadataKey, target: any, propertyKey?: stri
     return metadata === undefined ? {} as T : metadata;
 }
 
-/**
- * Sets metadata on a target object
- */
-export function setMetadata(key: MetadataKey, value: any, target: any, propertyKey?: string): void {
+export const setMetadata = (key: MetadataKey, value: any, target: any, propertyKey?: string): void => {
+
     if (propertyKey) {
         Reflect.defineMetadata(key, value, target, propertyKey);
     } else {
         Reflect.defineMetadata(key, value, target);
     }
-}
+};
+
 
 /**
  * Gets all SCL metadata from a target
  */
 export function getSCLMetadata(target: any): SCLBlockMetadata {
     const blockOptions = getMetadata<SCLBlockOptions>(METADATA_KEYS.SCL, target);
-    const properties = getMetadata<Record<string, SCLPropertyOptions>>(METADATA_KEYS.PROPERTY, target);
+
+    // Get properties metadata from the prototype
+    let properties: Record<string, SCLPropertyOptions> = {};
+
+    // Get properties directly from the target
+    const directProperties = getMetadata<Record<string, SCLPropertyOptions>>(METADATA_KEYS.PROPERTY, target);
+
+    // Get properties from the prototype (for instance properties)
+    const prototypeProperties = target.prototype ?
+        getMetadata<Record<string, SCLPropertyOptions>>(METADATA_KEYS.PROPERTY, target.prototype) :
+        {};
+
+    // Merge all properties
+    properties = { ...directProperties, ...prototypeProperties };
 
     return {
         blockOptions,
@@ -51,10 +66,32 @@ export function getPropertyMetadata(target: any, propertyKey: string): SCLProper
 
 /**
  * Sets property metadata for a specific property
+ * @param target The target object or class
+ * @param propertyKey The property name
+ * @param metadata The metadata to set
+ * @returns The merged metadata
  */
 export function setPropertyMetadata(target: any, propertyKey: string, metadata: Partial<SCLPropertyOptions>): SCLPropertyOptions {
     const existingMetadata = getPropertyMetadata(target, propertyKey);
     const mergedMetadata = { ...existingMetadata, ...metadata };
+
+    // Store metadata on the target
     setMetadata(METADATA_KEYS.PROPERTY, mergedMetadata, target, propertyKey);
-    return mergedMetadata;
+
+    // Also store in a collective property map on the target
+    const allProperties = getMetadata<Record<string, SCLPropertyOptions>>(METADATA_KEYS.PROPERTY, target);
+    allProperties[propertyKey] = mergedMetadata;
+    setMetadata(METADATA_KEYS.PROPERTY, allProperties, target);
+
+    // If target is an instance (has constructor), also store on the constructor's prototype
+    if (target.constructor && target.constructor !== Object && target.constructor !== Function) {
+        const protoAllProperties = getMetadata<Record<string, SCLPropertyOptions>>(METADATA_KEYS.PROPERTY, target.constructor.prototype);
+        protoAllProperties[propertyKey] = mergedMetadata;
+        setMetadata(METADATA_KEYS.PROPERTY, protoAllProperties, target.constructor.prototype);
+    }
+
+    const updatedMetadata = getPropertyMetadata(target, propertyKey);
+
+
+    return updatedMetadata;
 } 

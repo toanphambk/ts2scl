@@ -1,18 +1,8 @@
 import 'reflect-metadata';
 import { ArrayDimension, SCLBlockOptions, SCLPropertyOptions, SCLInstanceType, SCLCategory, SCLVarType } from './types.js';
 import { METADATA_KEYS, MetadataKey } from './metadata-types.js';
-import { setPropertyMetadata } from '../../utils/metadata-utils.js';
-import { type } from 'os';
-const getMetadata = <T>(key: MetadataKey, target: any): T => Reflect.getMetadata(key, target) as T;
+import { setMetadata, setPropertyMetadata } from '../../utils/metadata-utils.js';
 
-const setMetadata = (key: MetadataKey, value: any, target: any, propertyKey?: string): void => {
-
-  if (propertyKey) {
-    Reflect.defineMetadata(key, value, target, propertyKey);
-  } else {
-    Reflect.defineMetadata(key, value, target);
-  }
-};
 
 export function SCLType(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}) {
   return function (target: any) {
@@ -21,7 +11,6 @@ export function SCLType(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}
       category: 'UDT',
       name: target.name,
     };
-
     setMetadata(METADATA_KEYS.SCL, metadata, target);
     return target;
   };
@@ -39,7 +28,7 @@ export function SCLDb(options: Omit<SCLBlockOptions, 'category' | 'name'>) {
   };
 }
 
-export function SCLFn(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}) {
+export function SCLFc(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}) {
   return function (target: any) {
     const metadata: SCLBlockOptions = {
       ...options,
@@ -51,7 +40,7 @@ export function SCLFn(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}) 
   };
 }
 
-export function SCLFB(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}) {
+export function SCLFb(options: Omit<SCLBlockOptions, 'category' | 'name'> = {}) {
   return function (target: any) {
     const metadata: SCLBlockOptions = {
       ...options,
@@ -69,7 +58,6 @@ export function SCLArray(dimensions?: ArrayDimension[]) {
     const metadata: Partial<SCLPropertyOptions> = {
       dimensions: dimensions,
     };
-
     setPropertyMetadata(target, propertyKey, metadata);
   };
 }
@@ -77,15 +65,21 @@ export function SCLArray(dimensions?: ArrayDimension[]) {
 
 export function Instance(instanceType: SCLInstanceType) {
   return function (target: any, propertyKey: string | symbol) {
-    const type = Reflect.getMetadata('design:type', target, propertyKey);
-    const metadata: Partial<SCLPropertyOptions> = {
-      instanceType: instanceType,
-      sclType: type?.name
-    };
-    setPropertyMetadata(target, propertyKey as string, metadata);
+    if (instanceType === 'single') {
+      const metadata: Partial<SCLPropertyOptions> = {
+        instanceType: instanceType,
+      };
+      setPropertyMetadata(target, propertyKey as string, metadata);
+    }
+    if (instanceType === 'multiple') {
+      const metadata: Partial<SCLPropertyOptions> = {
+        instanceType: instanceType,
+        scope: 'STATIC' as SCLVarType
+      };
+      setPropertyMetadata(target, propertyKey as string, metadata);
+    }
   };
 }
-
 
 export function Retain() {
   return function (target: any, propertyKey: string | symbol, parameterIndex?: number) {
@@ -109,10 +103,8 @@ export function Visibility(options: { externalVisible?: true, externalWritable?:
 
 export function Temp() {
   return function (target: any, propertyKey: string) {
-    const type = Reflect.getMetadata('design:type', target, propertyKey);
     const metadata: Partial<SCLPropertyOptions> = {
       scope: 'TEMP' as SCLVarType,
-      sclType: type?.name,
     };
 
     setPropertyMetadata(target, propertyKey, metadata);
@@ -121,27 +113,18 @@ export function Temp() {
 
 export function Static() {
   return function (target: any, propertyKey: string) {
-    const type = Reflect.getMetadata('design:type', target, propertyKey);
     const metadata: Partial<SCLPropertyOptions> = {
       scope: 'STATIC' as SCLVarType,
-      sclType: type?.name,
     };
 
     setPropertyMetadata(target, propertyKey, metadata);
   };
 }
 
-// Add a flag to disable error handling in tests
-export const DISABLE_ERROR_HANDLING_FOR_TESTS = false;
-
 export function Input({ externalVisible = true, externalWritable = true, externalAccessible = true }) {
   return function (target: any, propertyKey: string, parameterIndex: number) {
-    const types = Reflect.getMetadata('design:paramtypes', target, propertyKey);
-
-    const paramType = types ? types[parameterIndex] : { name: 'ANY' };
     const metadata: Partial<SCLPropertyOptions> = {
       scope: 'IN',
-      sclType: paramType ? paramType.name : 'ANY',
       externalVisible,
       externalWritable,
       externalAccessible,
@@ -152,29 +135,15 @@ export function Input({ externalVisible = true, externalWritable = true, externa
 
 export function Output({ externalVisible = true, externalWritable = true, externalAccessible = true }) {
   return function (target: any, propertyKey: string | symbol, parameterIndex: number) {
-    const types = Reflect.getMetadata('design:paramtypes', target, propertyKey);
-
-
-    const paramType = types ? types[parameterIndex] : { name: 'ANY' };
     const metadata: Partial<SCLPropertyOptions> = {
       scope: 'OUT',
-      sclType: paramType ? paramType.name : 'ANY',
       externalVisible,
       externalWritable,
       externalAccessible,
     };
 
+
     setPropertyMetadata(target, `param${parameterIndex}`, metadata);
   };
 }
 
-export function getSCLMetadata(target: any) {
-  const metadata = {
-    block: getMetadata<SCLBlockOptions>(METADATA_KEYS.SCL, target),
-    properties: getMetadata<Record<string, SCLPropertyOptions>>(METADATA_KEYS.PROPERTY, target),
-  };
-
-  return metadata;
-}
-
-export * from './types.js';

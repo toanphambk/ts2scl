@@ -1,10 +1,11 @@
-import { BOOL, Input, INT, Output, SCLFB, Static } from './decorators';
-import { TIME, SCLCategory } from './types';
+
+import { Input, Output, SCLFb, SCLFc } from "./core/types/decorators";
+import { BOOL, TIME } from "./core/types/types";
+
 
 // "R_TRIG_DB"(CLK := "TagIn",
 // Q => "TagOut");
-
-@SCLFB()
+@SCLFb({ sclInstruction: 'R_TRIG' })
 export class R_TRIG_DB {
     static exec(
         @Input({}) CLK: BOOL,
@@ -16,6 +17,7 @@ export class R_TRIG_DB {
 // "F_TRIG_DB"(CLK := "TagIn",
 // Q => "TagOut");
 
+@SCLFb({ sclInstruction: 'F_TRIG' })
 export class F_TRIG_DB {
     static exec(
         @Input({}) CLK: BOOL,
@@ -30,9 +32,9 @@ export class F_TRIG_DB {
 // Q => "Tag_Status",
 // ET => "Tag_ElapsedTime");
 
-@SCLFB()
-export class TP {
-    public exec(
+@SCLFb({ sclInstruction: 'IEC_TIMER' })
+export class TP_TIME {
+    public TP(
         @Input({}) IN: BOOL,
         @Input({}) PT: TIME,
         @Output({}) Q?: BOOL,
@@ -44,8 +46,8 @@ export class TP {
 // PT := "Tag_PresetTime",
 // Q => "Tag_Status",
 // ET => "Tag_ElapsedTime");
-@SCLFB()
-export class TON {
+@SCLFb({ sclInstruction: 'IEC_TIMER' })
+export class TON_TIME {
     public TON(
         @Input({}) IN: BOOL,
         @Input({}) PT: TIME,
@@ -58,8 +60,8 @@ export class TON {
 // PT := "Tag_PresetTime",
 // Q => "Tag_Status",
 // ET => "Tag_ElapsedTime");
-@SCLFB()
-export class TOF {
+@SCLFb({ sclInstruction: 'IEC_TIMER' })
+export class TOF_TIME {
     public TOF(
         @Input({}) IN: BOOL,
         @Input({}) PT: TIME,
@@ -68,8 +70,8 @@ export class TOF {
     ): void { }
 }
 
-SCLFB
-export class TONR {
+@SCLFb({ sclInstruction: 'IEC_TIMER' })
+export class TONR_TIME {
     public TONR(
         @Input({}) IN: BOOL,
         @Input({}) PT: TIME,
@@ -80,10 +82,10 @@ export class TONR {
 
 
 
-@SCLFB()
+@SCLFc({ sclInstruction: 'RESET_TIMER' })
 export class RESET_TIMER {
-    public RESET_TIMER(
-        @Input({}) IN: TON | TOF | TP | TONR | TOF,
+    public static exec(
+        @Input({}) TIMER: TON_TIME | TOF_TIME | TP_TIME | TONR_TIME | TOF_TIME,
     ): void { }
 }
 

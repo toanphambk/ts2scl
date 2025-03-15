@@ -129,7 +129,7 @@ export class SCLSectionGenerator extends BaseGenerator {
         scope: SCLVarType
     ): string {
         const vars = members
-            .filter(member => ts.isPropertyDeclaration(member) && DecoratorUtils.hasDecorator(member, decoratorName))
+            .filter(member => ts.isPropertyDeclaration(member))
             .map(prop => this.parsePropertyDeclaration(prop as ts.PropertyDeclaration, scope))
             .filter(Boolean) as SCLPropertyOptions[];
 
