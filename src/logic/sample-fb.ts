@@ -76,6 +76,8 @@ export class DriveController {
     @Static()
     public safetyStatus: WORD;
 
+
+
     public exec(
         @Input({}) input: DriveControllerInput,
         @Output({}) output: DriveControllerOutput
@@ -102,7 +104,7 @@ export class DriveController {
         let validationStatus: BOOL = false;
         DriveCalculateSpeed.exec(calcSpeedInput, calcSpeedOutput);
 
-        this.delayOn.TON(calcSpeedInput.enable, "1s");
+        this.delayOn.TON(calcSpeedInput.enable, "1s", undefined, "1s");
         RESET_TIMER.exec(this.delayOn);
 
         // Process error count with a while loop

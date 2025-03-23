@@ -720,6 +720,7 @@ export class SCLExpressionGenerator extends BaseGenerator {
                 argVal = this.generateExpression(arg);
             }
             if (!argVal) return '';
+            if (argVal.includes('undefined')) return '';
             return `${param.name.text} ${op} ${argVal}`;
         }).filter(Boolean);
     }
